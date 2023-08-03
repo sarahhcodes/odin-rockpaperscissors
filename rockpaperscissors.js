@@ -1,12 +1,18 @@
-/*
-    FUTURE UPDATES: quit the game if the user cancels
-    GUI coming soon!
-*/
-
 let playerSelection;
 let computerSelection;
 let playerWins = 0;
 let computerWins = 0;
+let matchNumber = 0;
+let gameOver = false;
+
+const buttons = document.querySelectorAll('button');
+const div = document.querySelector('div');
+const displayedResults = document.createElement('p');
+const scoreboard = document.createElement('div');
+
+// initialize displayed results
+displayedResults.textContent = "pick your choice";
+div.appendChild(displayedResults);
 
 // function that selects the computer's choice and stores it in computerSelection
 function getComputerChoice() {
@@ -56,29 +62,35 @@ function playRPS(player, computer) {
 
 // function that calls the game
 function game() {
-    for (let i=1; i < 6; i++) {
-        playerSelection = prompt("Rock, paper, or scissors?").toLowerCase();
+    if(!gameOver) {
+        displayedResults.textContent = playRPS(playerSelection,computerSelection);
+        matchNumber++;
 
-        // make sure player entered either rock, paper, or scissors
-        while (playerSelection != "rock" && 
-        playerSelection != "paper" && 
-        playerSelection != "scissors") {
-            playerSelection = prompt("You broke the rules! Pick either rock, paper, or scissors!").toLowerCase();
+        if (playerWins >= 5 || computerWins >= 5) { 
+            gameOver = true;
+
+            if (playerWins > computerWins) {
+                displayedResults.textContent = "You won! Congratulations!!!!!";
+            } else if (computerWins > playerWins) {
+                displayedResults.textContent = "You lost! The computer won!";
+            } else {
+                displayedResults.textContent = "It was a tie!";
+            }
         }
 
-        getComputerChoice();
-
-        console.log("Match " + i + " of 5:")
-        console.log(playRPS(playerSelection, computerSelection));
-    }
-
-    if (playerWins > computerWins) {
-        console.log("You won! Congratulations!!!!!");
-    } else if (computerWins > playerWins) {
-        console.log("You lost! The computer won!");
-    } else {
-        console.log("It was a tie!");
+        scoreboard.textContent = "player score: " + playerWins + " computer score: " + computerWins;
+        div.appendChild(scoreboard);
+        div.appendChild(displayedResults);
     }
 }
 
-game();
+// gets the player's choice depending on the button they click
+function getPlayerChoice(click) {
+    playerSelection = click.classList.value;
+}
+
+buttons.forEach(button => button.addEventListener('click', e => {
+    getPlayerChoice(e.target);  
+    getComputerChoice();
+    game();
+}));
